@@ -1,0 +1,9 @@
+_build
+setup.data
+setup.log
+setup.exe
+api.docdir
+var/run/
+var/log/
+
+static/site_client.js

@@ -1,0 +1,59 @@
+OASISFormat: 0.4
+Name: couchdb
+Version:  0.2
+Synopsis: Library for CouchDB
+Authors: kenkubo
+License:  LGPL
+AlphaFeatures: ocamlbuild_more_args, compiled_setup_ml
+Plugins: DevFiles (0.3), META (0.3)
+BuildTools: ocamlbuild
+OCamlVersion: >= 4.01
+
+Library "couchdb"
+  Path: src
+  Modules:
+    Couchdb,
+    Couchdb_api,
+    Couchdb_doc,
+    Couchdb_types,
+    Couchdb_view,
+    Json_util
+  BuildDepends:
+    batteries,
+    lwt,
+    uri,
+    lwt.syntax,
+    lwt.unix,
+    cohttp,
+    cohttp.lwt,
+    deriving,
+    deriving-yojson,
+    deriving-yojson.syntax,
+    netstring
+    
+
+Document "couchdb_api"
+  Type: ocamlbuild (0.4)
+  BuildTools: ocamldoc
+  Title: API reference for CouchDB
+  XOCamlbuildPath: .
+  XOCamlbuildExtraArgs:
+    "-docflags '-colorize-code -short-functors -charset utf-8'"
+  XOCamlbuildLibraries: couchdb
+
+
+Executable "test"
+  Install: false
+  Path: test
+  Build$: flag(tests)
+  MainIs: test.ml
+  CompiledObject: best
+  BuildDepends:
+    couchdb,oUnit
+  
+Test "test"  
+  Run$: flag(tests) 
+  TestTools: test
+  Command: $test
+  WorkingDirectory: test
+  

@@ -1,0 +1,13 @@
+# OASIS_START
+# DO NOT EDIT (digest: 167de59ffc76c3571a95001acc97d445)
+version = "0.2"
+description = "Library for CouchDB"
+requires =
+"batteries lwt uri lwt.syntax lwt.unix cohttp cohttp.lwt deriving deriving-yojson deriving-yojson.syntax netstring"
+archive(byte) = "couchdb.cma"
+archive(byte, plugin) = "couchdb.cma"
+archive(native) = "couchdb.cmxa"
+archive(native, plugin) = "couchdb.cmxs"
+exists_if = "couchdb.cma"
+# OASIS_STOP
+
