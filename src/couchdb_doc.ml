@@ -6,6 +6,7 @@
 
 open Lwt
 open Couchdb_types
+open Couchdb_config
 open Json_util
 
 module Api = Couchdb_api
@@ -79,7 +80,9 @@ struct
       | Api.Success json -> 
         DT.Yojson_doc_t.from_json ~o:(DT.default_value) json
 
-      | Api.Fail err -> failwith (err.Api.error ^ ": " ^ err.Api.reason)
+      | Api.Fail err ->
+        logout ("Failed at document get error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ " id:" ^ key); 
+        failwith (err.Api.error ^ ": " ^ err.Api.reason)
       | Api.Ok err -> failwith "Fatal: when get request retuen ok response error"
     )
 
@@ -94,7 +97,9 @@ struct
       (BatOption.default "" attach_file.data)
     >>= function
     | (code, Api.Success json ) -> failwith "Fatal: when put request retuen success response error"
-    | (code, Api.Fail err ) -> failwith (err.Api.error ^ ": " ^ err.Api.reason)
+    | (code, Api.Fail err ) ->
+      logout ("Failed at put_attach error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ " id:" ^ id);
+      failwith (err.Api.error ^ ": " ^ err.Api.reason)
     | (code, Api.Ok ok ) -> return ok
 
 
@@ -102,7 +107,9 @@ struct
     Api.delete_attach DT.db id rev filename
     >>= function
     | (code, Api.Success json ) -> failwith "Fatal: when put request retuen success response error"
-    | (code, Api.Fail err ) -> failwith (err.Api.error ^ ": " ^ err.Api.reason)
+    | (code, Api.Fail err ) ->
+      logout ("Failed at delete_attach error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ " id:" ^ id);
+      failwith (err.Api.error ^ ": " ^ err.Api.reason)
     | (code, Api.Ok ok ) -> return ok
 
   let gets key_list : result_body Lwt.t = 
@@ -129,35 +136,45 @@ struct
           rows = row_result;
         } in
         return result)
-      | Api.Fail err -> failwith (err.Api.error ^ ": " ^ err.Api.reason)
+      | Api.Fail err ->
+        logout ("Failed at document gets error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason );
+        failwith (err.Api.error ^ ": " ^ err.Api.reason)
       | Api.Ok err -> failwith "Fatal: when get request retuen ok response error"
 
   let post v =
     Api.post DT.db (DT.Yojson_doc_t.to_json v)
     >>= function
     | (code, Api.Success json ) -> failwith "Fatal: when post request retuen success response error"
-    | (code, Api.Fail err ) -> failwith (err.Api.error ^ ": " ^ err.Api.reason)
+    | (code, Api.Fail err ) ->
+      logout ("Failed at document post error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason);
+      failwith (err.Api.error ^ ": " ^ err.Api.reason)
     | (code, Api.Ok ok ) -> return ok
 
   let put id v =
     Api.put DT.db id (DT.Yojson_doc_t.to_json v)
     >>= function
     | (code, Api.Success json ) -> failwith "Fatal: when put request retuen success response error"
-    | (code, Api.Fail err ) -> failwith (err.Api.error ^ ": " ^ err.Api.reason)
+    | (code, Api.Fail err ) ->
+      logout ("Failed at document put error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ " id:" ^ id);
+      failwith (err.Api.error ^ ": " ^ err.Api.reason)
     | (code, Api.Ok ok ) -> return ok
 
   let put_new id v =
     Api.put_new DT.db id (DT.Yojson_doc_t.to_json v)
     >>= function
     | (code, Api.Success json ) -> failwith "Fatal: when put_new request retuen success response error"
-    | (code, Api.Fail err ) -> failwith (err.Api.error ^ ": " ^ err.Api.reason)
+    | (code, Api.Fail err ) ->
+      logout ("Failed at document put_new error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ " id:" ^ id);
+      failwith (err.Api.error ^ ": " ^ err.Api.reason)
     | (code, Api.Ok ok ) -> return ok
 
   let delete key rev =
     Api.delete DT.db key rev
     >>= function
     | (code, Api.Success json ) -> failwith "Fatal: when delete request retuen success response error"
-    | (code, Api.Fail err ) -> failwith (err.Api.error ^ ": " ^ err.Api.reason)
+    | (code, Api.Fail err ) ->
+      logout ("Failed at document delete error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ " id:" ^ key);
+      failwith (err.Api.error ^ ": " ^ err.Api.reason)
     | (code, Api.Ok ok ) -> return ok
 
   let posts (vl:DT.doc_t list) =

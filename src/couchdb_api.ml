@@ -5,9 +5,10 @@
 
 open Lwt
 open Couchdb_types
+open Couchdb_config
+
 open Cohttp
 
-let debug = ref false
 
 type status = 
 | OK
@@ -102,10 +103,10 @@ let json_to_response json =
 
 let convert_response (resp, body) =
   let code = resp |> Response.status |> Code.code_of_status in
-  if !debug then Printf.printf "Code: %d\n" code;
+  if !debug then (logout (Printf.sprintf "Code: %d\n" code));
   Cohttp_lwt_body.to_string body 
   >>= fun strbody ->
-  if !debug then print_endline ("Response: " ^ strbody);
+  if !debug then logout ("Response: " ^ strbody);
   let json = Yojson.Safe.from_string strbody in
   let vcode = status_of_code code in
   let response = json_to_response json in
@@ -126,7 +127,7 @@ let remove_special_field j =
     
 let get db key =
   let uri = Uri.of_string ((uri db) ^ key)  in
-  if !debug then print_endline ("GET " ^ (Uri.to_string uri));
+  if !debug then logout ("GET " ^ (Uri.to_string uri));
   Cohttp_lwt_unix.Client.get uri 
   >>=  convert_response 
 
@@ -139,7 +140,7 @@ let get_view db design_name vname ~query () : (status * response_body) Lwt.t =
        ~path:("/" ^ db.name ^ "/_design/" ^ design_name ^ "/_view/" ^ vname) 
        ~query ()) in
 
-  if !debug then print_endline ("GET VIEW " ^ (Uri.path_and_query view_uri));
+  if !debug then logout ("GET VIEW " ^ (Uri.path_and_query view_uri));
   Cohttp_lwt_unix.Client.get view_uri 
   >>=  (fun (res:Cohttp_lwt.Response.t * Cohttp_lwt_body.t) ->
     convert_response res)
@@ -156,8 +157,8 @@ let gets_view db design_name vname ~keys_list () : (status * response_body) Lwt.
   let body = Cohttp_lwt_body.of_string jstr in
   let headers = 
     Cohttp.Header.init_with "Content-Type" "application/json" in
-  if !debug then print_endline ("GETS VIEW " ^ (Uri.path_and_query view_uri));
-  if !debug then print_endline ("GETS BODY " ^ (jstr)); 
+  if !debug then logout ("GETS VIEW " ^ (Uri.path_and_query view_uri));
+  if !debug then logout ("GETS BODY " ^ (jstr)); 
   Cohttp_lwt_unix.Client.post ~body ~headers view_uri 
   >>=  (fun (res:Cohttp_lwt.Response.t * Cohttp_lwt_body.t) ->
     convert_response res)
@@ -213,7 +214,7 @@ let attachments_encode j:Yojson.Safe.json =
 let post db j =
   let j' = attachments_encode j in
   let jstr = Yojson.Safe.to_string (remove_special_field j') in
-  if !debug then print_endline jstr;
+  if !debug then logout jstr;
   let body = Cohttp_lwt_body.of_string jstr in
   let headers = 
     Cohttp.Header.init_with "Content-Type" "application/json" in
@@ -226,7 +227,7 @@ let put db id j =
   let j' = attachments_encode j in
   let jstr = Yojson.Safe.to_string (j') in
   let body = Cohttp_lwt_body.of_string jstr in
-  if !debug then print_endline jstr;
+  if !debug then logout jstr;
   let headers = 
     Cohttp.Header.init_with "Content-Type" "application/json" in
   Cohttp_lwt_unix.Client.put ~body ~headers (Uri.of_string ((uri db) ^ id) ) 
@@ -243,7 +244,7 @@ let delete db key rev =
 
 let bulk_post db j =
   let jstr = Yojson.Safe.to_string j in
-  if !debug then print_endline jstr;
+  if !debug then logout jstr;
   let body = Cohttp_lwt_body.of_string jstr in
   let headers = 
     Cohttp.Header.init_with "Content-Type" "application/json" 
@@ -253,7 +254,7 @@ let bulk_post db j =
   >>= fun (res,body) ->
   Cohttp_lwt_body.to_string body 
   >|= fun strbody ->
-    if !debug then print_endline strbody;
+    if !debug then logout strbody;
     ()
 
 let put_view db id j =
@@ -268,7 +269,7 @@ let put_view db id j =
 
 let temp_view db j =
   let jstr = Yojson.Safe.to_string j in
-  if !debug then print_endline jstr;
+  if !debug then logout jstr;
   let body = Cohttp_lwt_body.of_string jstr in
   let headers = 
     Header.init_with "Content-Type" "application/json" 
@@ -277,16 +278,16 @@ let temp_view db j =
     (Uri.of_string ((uri db) ^ "_temp_view") ) 
   >>= fun (resp,body) ->
   let code = resp |> Response.status |> Code.code_of_status in
-  Printf.printf "Response code: %d\n" code;
+  logout (Printf.sprintf "Response code: %d\n" code);
   List.iter 
-    (Printf.printf "Headers: %s") 
+    (fun s -> logout (Printf.sprintf "Headers: %s" s)) 
     (resp |> Response.headers |> Header.to_lines);
 
   convert_response (resp,body)
 
 let get_attach db key filename =
   let uri = Uri.of_string ((uri db) ^ key ^ "/" ^filename)  in
-  if !debug then print_endline ("GET " ^ (Uri.to_string uri));
+  if !debug then logout ("GET " ^ (Uri.to_string uri));
   Cohttp_lwt_unix.Client.get uri 
   >|= fun (resp, body) ->
   let code = resp |> Response.status |> Code.code_of_status in

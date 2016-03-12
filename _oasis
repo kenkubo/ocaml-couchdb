@@ -13,6 +13,7 @@ Library "couchdb"
   Path: src
   Modules:
     Couchdb,
+    Couchdb_config,
     Couchdb_api,
     Couchdb_doc,
     Couchdb_types,
@@ -41,15 +42,20 @@ Document "couchdb_api"
     "-docflags '-colorize-code -short-functors -charset utf-8'"
   XOCamlbuildLibraries: couchdb
 
+Library "test_type"
+  Path: test
+  Modules:
+    Test_type
 
 Executable "test"
   Install: false
   Path: test
   Build$: flag(tests)
-  MainIs: test.ml
+  MainIs: test2.ml
   CompiledObject: best
   BuildDepends:
-    couchdb,oUnit
+    couchdb,oUnit,test_type
+
   
 Test "test"  
   Run$: flag(tests) 
@@ -57,3 +63,4 @@ Test "test"
   Command: $test
   WorkingDirectory: test
   
+

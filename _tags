@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 666ad2b92256e69e005a2dcb79a5e13c)
+# DO NOT EDIT (digest: 4293ece841e28d8ad6cd7104c0bbcfe4)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -27,20 +27,23 @@ true: annot, bin_annot
 <src/*.ml{,i,y}>: package(lwt.unix)
 <src/*.ml{,i,y}>: package(netstring)
 <src/*.ml{,i,y}>: package(uri)
+# Library test_type
+"test/test_type.cmxs": use_test_type
 # Executable test
-<test/test.{native,byte}>: package(batteries)
-<test/test.{native,byte}>: package(cohttp)
-<test/test.{native,byte}>: package(cohttp.lwt)
-<test/test.{native,byte}>: package(deriving)
-<test/test.{native,byte}>: package(deriving-yojson)
-<test/test.{native,byte}>: package(deriving-yojson.syntax)
-<test/test.{native,byte}>: package(lwt)
-<test/test.{native,byte}>: package(lwt.syntax)
-<test/test.{native,byte}>: package(lwt.unix)
-<test/test.{native,byte}>: package(netstring)
-<test/test.{native,byte}>: package(oUnit)
-<test/test.{native,byte}>: package(uri)
-<test/test.{native,byte}>: use_couchdb
+<test/test2.{native,byte}>: package(batteries)
+<test/test2.{native,byte}>: package(cohttp)
+<test/test2.{native,byte}>: package(cohttp.lwt)
+<test/test2.{native,byte}>: package(deriving)
+<test/test2.{native,byte}>: package(deriving-yojson)
+<test/test2.{native,byte}>: package(deriving-yojson.syntax)
+<test/test2.{native,byte}>: package(lwt)
+<test/test2.{native,byte}>: package(lwt.syntax)
+<test/test2.{native,byte}>: package(lwt.unix)
+<test/test2.{native,byte}>: package(netstring)
+<test/test2.{native,byte}>: package(oUnit)
+<test/test2.{native,byte}>: package(uri)
+<test/test2.{native,byte}>: use_couchdb
+<test/test2.{native,byte}>: use_test_type
 <test/*.ml{,i,y}>: package(batteries)
 <test/*.ml{,i,y}>: package(cohttp)
 <test/*.ml{,i,y}>: package(cohttp.lwt)
@@ -54,4 +57,5 @@ true: annot, bin_annot
 <test/*.ml{,i,y}>: package(oUnit)
 <test/*.ml{,i,y}>: package(uri)
 <test/*.ml{,i,y}>: use_couchdb
+<test/*.ml{,i,y}>: use_test_type
 # OASIS_STOP

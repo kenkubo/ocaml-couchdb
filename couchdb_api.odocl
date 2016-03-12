@@ -1,6 +1,7 @@
 # OASIS_START
-# DO NOT EDIT (digest: ab306f47ef25950868e373708bdd4934)
+# DO NOT EDIT (digest: 3d8e4c7b46811d4b165fc91017054319)
 src/Couchdb
+src/Couchdb_config
 src/Couchdb_api
 src/Couchdb_doc
 src/Couchdb_types

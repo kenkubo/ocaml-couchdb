@@ -4,6 +4,7 @@
 
 open Lwt
 open Couchdb_types
+open Couchdb_config
 module Api = Couchdb_api
 
 (**
@@ -66,7 +67,7 @@ end
 
 module View (VT: ViewType) =
 struct
-
+  type key = VT.key
   type row = {
       id: string;
       key: VT.key;
@@ -119,26 +120,32 @@ struct
           | None -> q )
         [] params 
   let rows_of_json json =
-            try 
-              Yojson_row.from_json (*~o:default_row*) json
+            try
+                Yojson_row.from_json json
             with
               | e ->
-                let open BatInnerIO in
-                write_string stderr "Couchdb json parse error:";
-                BatPrintexc.print stderr e;
-                write_string stderr (" at " ^ (Yojson.Safe.to_string json));
-                write_string stderr "\n";
+                let open BatPervasives in
+                logout "exceptiin";
+                logout (Yojson_row.to_string default_row);
+                logout "Couchdb json parse error:";
+                logout (Printexc.to_string e);
+                logout (" at " ^ (Yojson.Safe.to_string json));
+                logout "\n";
                 Yojson_row.from_json ~o:default_row json
 
-  let query ?(key=None) ?(startkey=None) ?(descending=false) ?(limit=None) () :  result_body Lwt.t = 
+  let query ?(key=None) ?(startkey=None) ?(endkey=None) ?(descending=false) ?(limit=None) ?(group=false) () :  result_body Lwt.t = 
     let params = [
       "key" , BatOption.map VT.Yojson_key.to_string key;
-      "startkey" ,startkey;
-      "limit" ,limit;
+      "startkey" ,BatOption.map VT.Yojson_key.to_string startkey;
+      "endkey" ,BatOption.map VT.Yojson_key.to_string endkey;
+      "limit" ,BatOption.map string_of_int limit;
     ] in
     
     let params = 
       if descending then ("descending" , Some "true") :: params else params in
+    let params = 
+      if group then ("group" , Some "true") :: params else params in
+
         
     let query = uri_query_of params in
     
