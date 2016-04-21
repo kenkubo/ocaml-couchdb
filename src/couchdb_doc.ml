@@ -155,8 +155,17 @@ struct
       | Api.Success json -> (
         let rows = json_list (json_assoc "rows" json) in
         let row_result = List.map (fun a ->
-          let r = Yojson_result.from_json  a in
-          r
+          let id = json_assoc "id" a in
+          let key =  json_assoc "key" a in
+          let value = json_assoc "value" a in
+          let doc = json_assoc "doc" a in
+          let r = DT.Yojson_doc_t.from_json ~o:(DT.default_value) doc in
+          {
+            id = Json_util.string_of_json id;
+            key = Json_util.string_of_json key;
+            value = Yojson_all_docs_value.from_json value;
+            doc = r ;
+          }
         ) rows in
         let result = {
           total_rows = 

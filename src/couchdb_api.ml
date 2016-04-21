@@ -187,6 +187,7 @@ let gets db key_list =
   let post_uri = (uri db) ^ "_all_docs?include_docs=true" in
   let headers = 
     Cohttp.Header.init_with "Content-Type" "application/json" in
+  if !debug then logout ("GET " ^ ( post_uri));
   Cohttp_lwt_unix.Client.post ~body ~headers
     (Uri.of_string (post_uri)) 
   >>= convert_response
