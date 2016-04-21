@@ -21,6 +21,15 @@ type attach_file = {
   stub: bool option
 } deriving (Yojson)
 
+type rev = {
+  rev: string;
+  status: string;
+} deriving (Yojson)
+
+type revs_info = {
+  _revs_info: rev list
+} deriving (Yojson)
+
 let default_attach_file =
   {
     filename = "";
@@ -84,6 +93,33 @@ struct
         logout ("Failed at document get error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ " id:" ^ key); 
         failwith (err.Api.error ^ ": " ^ err.Api.reason)
       | Api.Ok err -> failwith "Fatal: when get request retuen ok response error"
+    )
+
+  let get_rev key rev = 
+    Api.get_rev DT.db key rev
+    >>= fun (code,strbody) ->
+    return (
+      match strbody with
+      | Api.Success json -> 
+        DT.Yojson_doc_t.from_json ~o:(DT.default_value) json
+
+      | Api.Fail err ->
+        logout ("Failed at document get error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ " id:" ^ key); 
+        failwith (err.Api.error ^ ": " ^ err.Api.reason)
+      | Api.Ok err -> failwith "Fatal: when get request retuen ok response error"
+    )
+    
+  let revs_info key : revs_info Lwt.t =
+    Api.get_revs_info DT.db key
+    >>= fun (code,strbody) ->
+    return (
+      match strbody with
+      | Api.Success json -> 
+        Yojson_revs_info.from_json json
+      | Api.Fail err ->
+        logout ("Failed at document revisions get error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ " id:" ^ key); 
+        failwith (err.Api.error ^ ": " ^ err.Api.reason)
+      | Api.Ok err -> failwith "Fatal: when get revs_info request retuen ok response error"
     )
 
   let get_attach id filename = 
@@ -179,6 +215,6 @@ struct
 
   let posts (vl:DT.doc_t list) =
     Api.bulk_post DT.db (Yojson_docs.to_json {docs=vl; all_or_nothing=true})
-    
+
 end
 

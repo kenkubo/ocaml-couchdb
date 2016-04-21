@@ -54,6 +54,8 @@ type response_body =
 
 type response = status  * response_body
 
+
+
 let attachments_decode j:Yojson.Safe.json =
   let open Yojson.Safe in
   let list_of_object : json -> json  = function
@@ -130,6 +132,19 @@ let get db key =
   if !debug then logout ("GET " ^ (Uri.to_string uri));
   Cohttp_lwt_unix.Client.get uri 
   >>=  convert_response 
+
+let get_rev db key rev =
+  let uri = Uri.of_string ((uri db) ^ key ^ "?rev=" ^ rev)  in
+  if !debug then logout ("GET " ^ (Uri.to_string uri));
+  Cohttp_lwt_unix.Client.get uri 
+  >>=  convert_response 
+
+let get_revs_info db key =
+  let uri = Uri.of_string ((uri db) ^ key ^ "?revs_info=true")  in
+  if !debug then logout ("GET " ^ (Uri.to_string uri));
+  Cohttp_lwt_unix.Client.get uri 
+  >>=  convert_response 
+
 
 let get_view db design_name vname ~query () : (status * response_body) Lwt.t =
   let view_uri =
