@@ -90,7 +90,7 @@ struct
         DT.Yojson_doc_t.from_json ~o:(DT.default_value) json
 
       | Api.Fail err ->
-        logout ("Failed at document get error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ " id:" ^ key); 
+        logout ("Failed at document get error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ "db:" ^ DT.db.name ^  " id:" ^ key); 
         failwith (err.Api.error ^ ": " ^ err.Api.reason)
       | Api.Ok err -> failwith "Fatal: when get request retuen ok response error"
     )
@@ -104,7 +104,7 @@ struct
         DT.Yojson_doc_t.from_json ~o:(DT.default_value) json
 
       | Api.Fail err ->
-        logout ("Failed at document get error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ " id:" ^ key); 
+        logout ("Failed at document get error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ "db:" ^ DT.db.name ^  " id:" ^ key); 
         failwith (err.Api.error ^ ": " ^ err.Api.reason)
       | Api.Ok err -> failwith "Fatal: when get request retuen ok response error"
     )
@@ -117,7 +117,7 @@ struct
       | Api.Success json -> 
         Yojson_revs_info.from_json json
       | Api.Fail err ->
-        logout ("Failed at document revisions get error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ " id:" ^ key); 
+        logout ("Failed at document revisions get error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ "db:" ^ DT.db.name ^  " id:" ^ key); 
         failwith (err.Api.error ^ ": " ^ err.Api.reason)
       | Api.Ok err -> failwith "Fatal: when get revs_info request retuen ok response error"
     )
@@ -134,7 +134,7 @@ struct
     >>= function
     | (code, Api.Success json ) -> failwith "Fatal: when put request retuen success response error"
     | (code, Api.Fail err ) ->
-      logout ("Failed at put_attach error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ " id:" ^ id);
+      logout ("Failed at put_attach error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ "db:" ^ DT.db.name ^  " id:" ^ id);
       failwith (err.Api.error ^ ": " ^ err.Api.reason)
     | (code, Api.Ok ok ) -> return ok
 
@@ -144,7 +144,7 @@ struct
     >>= function
     | (code, Api.Success json ) -> failwith "Fatal: when put request retuen success response error"
     | (code, Api.Fail err ) ->
-      logout ("Failed at delete_attach error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ " id:" ^ id);
+      logout ("Failed at delete_attach error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ "db:" ^ DT.db.name ^ " id:" ^ id);
       failwith (err.Api.error ^ ": " ^ err.Api.reason)
     | (code, Api.Ok ok ) -> return ok
 
@@ -200,7 +200,7 @@ struct
     >>= function
     | (code, Api.Success json ) -> failwith "Fatal: when put request retuen success response error"
     | (code, Api.Fail err ) ->
-      logout ("Failed at document put error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ " id:" ^ id);
+      logout ("Failed at document put error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ "db:" ^ DT.db.name ^  " id:" ^ id);
       failwith (err.Api.error ^ ": " ^ err.Api.reason)
     | (code, Api.Ok ok ) -> return ok
 
@@ -209,7 +209,7 @@ struct
     >>= function
     | (code, Api.Success json ) -> failwith "Fatal: when put_new request retuen success response error"
     | (code, Api.Fail err ) ->
-      logout ("Failed at document put_new error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ " id:" ^ id);
+      logout ("Failed at document put_new error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ "db:" ^ DT.db.name ^  " id:" ^ id);
       failwith (err.Api.error ^ ": " ^ err.Api.reason)
     | (code, Api.Ok ok ) -> return ok
 
@@ -218,7 +218,7 @@ struct
     >>= function
     | (code, Api.Success json ) -> failwith "Fatal: when delete request retuen success response error"
     | (code, Api.Fail err ) ->
-      logout ("Failed at document delete error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ " id:" ^ key);
+      logout ("Failed at document delete error:" ^ err.Api.error ^ " reason:" ^ err.Api.reason ^ "db:" ^ DT.db.name ^  " id:" ^ key);
       failwith (err.Api.error ^ ": " ^ err.Api.reason)
     | (code, Api.Ok ok ) -> return ok
 
